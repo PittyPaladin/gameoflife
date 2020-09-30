@@ -4,11 +4,14 @@ LDFLAGS = -lncurses
 DEPS = conway.h
 OBJ = main.o init.o
 
+SRCS := $(wildcard *.c)
+BINS := $(SRCS:%.c=%)
+
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 conway: $(OBJ)
-	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS)
+	${CC}  -o $@ $^  $(LDFLAGS) $(CFLAGS)
 
 clean:
-	rm -f $(OBJ) conway 
+	rm -f *.o ${BINS} 
