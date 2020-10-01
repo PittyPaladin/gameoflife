@@ -3,25 +3,25 @@
 
 int main ()
 {
-    // The cell struct
+    // The cell struct. New type is customary to write it in caps
     typedef struct {
         int alive;
         int pos_x;
         int pos_y;
-    } cell;
+    } CELL;
 
-    // Array of pointers of type cell
+    // Array of pointers of type CELL
     int nrows = 2;
     int ncols = 3;
 
-    cell** field = (cell**) malloc(nrows*sizeof(cell*));
+    CELL** field = (CELL**) malloc(nrows*sizeof(CELL*));
     
-    // Allocate array of cell per each array (row)
+    // Allocate array of CELL per each array (row)
     for (int i = 0; i < nrows; ++i)
-        field[i] = (cell*) malloc(ncols*sizeof(cell));
+        field[i] = (CELL*) malloc(ncols*sizeof(CELL));
     
     // Test: fill the 2D array up
-    cell fillcell;
+    CELL fillcell;
     fillcell.alive = 1; 
     fillcell.pos_x = 0; 
     fillcell.pos_y = 1;
