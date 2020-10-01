@@ -14,3 +14,5 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) conway 
+
+#c
