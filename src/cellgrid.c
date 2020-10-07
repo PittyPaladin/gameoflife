@@ -126,7 +126,7 @@ int main (int argc, char* argv[])
             mvwaddch(cellgrid_win, i, j, CELL_FILL);
         }
     }
-    wattroff(cellgrid_win, A_STANDOUT);
+    wattroff(cellgrid_win, A_STANDOUT); // Don't really need it if it's placed at the end
     
     
     
