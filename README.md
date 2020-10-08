@@ -1,1 +1,1 @@
-This is the readme
+This is Conway's Game of Life written in C, and displayed to terminal using ncurses library. This project is a task for the Embedded and Real Time Systems subject from the MSc on Automatic Control at UPC.

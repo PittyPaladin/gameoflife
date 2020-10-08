@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ncurses.h>
 #include <stdlib.h>
+#include <string.h>
 #include "golcompute.h"
 
 
@@ -53,12 +54,20 @@ WINDOW* setup_info_window (int ymax, int xmax)
     int begin_y_inf = nlines_grid + WIN2WIN_SEPARATION;
     WINDOW* infowin = newwin(NLINES_INFOWIN, ncols_inf, begin_y_inf, WIN_MARGINS); 
     box(infowin, 0, 0);
-    mvwprintw(infowin, 1, WIN_MARGINS, "text2");
+    mvwprintw(infowin, 1, WIN_MARGINS, "Generation: ");
+    mvwprintw(infowin, 1, WIN_MARGINS + strlen("Generation: "), "%d", 0);
     
     refresh();
     wrefresh(infowin);
 
     return infowin;
+}
+
+void update_gennumber (WINDOW* infowin, int gen)
+{
+    /* Update the integer after the word "Generation: " to tell the user at 
+    which generation the simulation is at */
+    mvwprintw(infowin, 1, WIN_MARGINS + strlen("Generation: "), "%d", gen);
 }
 
 void init_ncurses (int* ymax, int* xmax)
@@ -112,43 +121,23 @@ void init_ncurses (int* ymax, int* xmax)
     checkdims(*ymax, *xmax);
 }
 
-void display (WINDOW* fieldwin, WINDOW* infowin, CELL** field, int nrows, int ncols)
+void display (WINDOW* fieldwin, WINDOW* infowin, CELL** field, int nrows, int ncols, int generations)
 {
     // Put cells visible in terminal
     int ymax_grid, xmax_grid, ymin_grid, xmin_grid, x, y, i, j;
     getmaxyx(fieldwin, ymax_grid, xmax_grid);
     getbegyx(fieldwin, ymin_grid, xmin_grid);
     
-    wattron(fieldwin, A_STANDOUT);
     for (x = ymin_grid, i = 0; x < ymax_grid-1; x++, i++) 
         for (y = xmin_grid, j = 0; y < xmax_grid-2; y++, j++)
             if (field[i][j].current_state)
-                mvwaddch(fieldwin, x, y, CELL_FILL);
-    wattroff(fieldwin, A_STANDOUT);
+                mvwaddch(fieldwin, x, y, CELL_FILL | A_STANDOUT);
+            else
+                mvwaddch(fieldwin, x, y, CELL_FILL | A_NORMAL); 
+
+    // Put generation numbers in infowin
+    update_gennumber (infowin, generations);
 
     wrefresh(fieldwin);
     wrefresh(infowin);
 }
-
-// int main (int argc, char* argv[]) 
-// {
-//     int ymax, xmax;
-//     init_ncurses (&ymax, &xmax);
-    
-    
-//     WINDOW* cellgrid_win = setup_cellgrid_window(ymax, xmax);
-//     WINDOW* info_win = setup_info_window(ymax, xmax);
-
-
-//     // display (WINDOW* fieldwin, WINDOW* infowin, CELL** field, int nrows, int ncols);
-    
-
-//     // getch so the program doesn't exit straight away
-//     wgetch(cellgrid_win);
-
-//     // End ncurses
-//     endwin();
-    
-
-//     return (1);
-// }

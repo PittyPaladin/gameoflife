@@ -29,10 +29,12 @@ int main (int argc, char* argv[])
 	grid[17][42].current_state = 1;
     
     // Display to terminal the initial state
-    display (cellgrid_win, info_win, grid, nrows, ncols);
+    int gen = 0;
+    display (cellgrid_win, info_win, grid, nrows, ncols, gen);
+    gen += 1;
 
-
-    for (int iters = 0; iters < 250; iters++)
+    // Start the main loop
+    while (1)
     {
         // Go for all cells in the grid and compute their new state after one generation
         next_generation(grid, nrows, ncols);
@@ -41,19 +43,12 @@ int main (int argc, char* argv[])
         new_state2current_state(grid, nrows, ncols);
 
         // Display to console
-        display (cellgrid_win, info_win, grid, nrows, ncols);
+        display (cellgrid_win, info_win, grid, nrows, ncols, gen);
 
-        usleep(1000*5);
+        usleep(1000*100); // or it will go too fast
+        gen += 1;
     }
 
-
-    // Test: print the 2D array
-    // for (int i = 0; i < nrows; ++i){
-    //     for (int j = 0; j < ncols; ++j){
-    //         printf("%d ", grid[i][j].current_state);
-    //     }
-    //     printf("\n");
-    // }
 
     // getch so the program doesn't exit straight away
     wgetch(cellgrid_win);
