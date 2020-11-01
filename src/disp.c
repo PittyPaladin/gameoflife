@@ -2,18 +2,95 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h> // to include sleep
 #include "golcompute.h"
 
 
-/* Compile time defined variables that relate to DISPLAY*/
+/* Preprocessor defined variables that relate to DISPLAY*/
 #define MIN_YDIM 20 // min number of lines in cli
 #define MIN_XDIM 50 // min number of columns in cli
 #define WIN_MARGINS 2 // margin between windows
 #define WIN2WIN_SEPARATION 2 // separation between upper and lower window
 #define BEGIN_Y_CELLGRID 1 // line from the top at wich the grid starts
+#define BEGIN_Y_MENU 3 // line from the top at wich the menu starts
 #define NLINES_INFOWIN 3 // Number of lines the information window will have
 #define CELL_FILL ' ' // char with which cells will be filled when displayed
 
+
+char* show_menu (int ymax, int xmax)
+{
+    /* Obtain the maximum sizes of the windows to used them for the windows of 
+     menu. */
+         
+    // Get the list of files that could serve as initial configs
+    int nfiles;
+    char** fnames = listfiles (&nfiles);
+    printf(" ");
+
+    // Create a windows for the menu
+    int ncols_menu = xmax - WIN_MARGINS*2;
+    // fprintf(stdout, " "); // I don't know why, if this line is not here, menu breaks
+    WINDOW* menuwin = newwin(nfiles+3, ncols_menu, BEGIN_Y_MENU, WIN_MARGINS); //int nlines, int ncols, int begin_y, int begin_x
+    box(menuwin, 0, 0);
+
+    // Print a warming welcome title
+    attron(A_REVERSE);
+    mvwprintw(stdscr, BEGIN_Y_MENU - 2, WIN_MARGINS, "Welcome to Conway's Game of Life");
+    attroff(A_REVERSE);
+    mvwprintw(stdscr, BEGIN_Y_MENU - 1, WIN_MARGINS, "Pick an initial state from the menu below:");
+    refresh();
+    wrefresh(menuwin);
+    keypad(menuwin, true); //enables the reading of function keys like F1, F2, arrow keys.
+    
+    
+    // Choices of the menu
+    int choice;
+    int highlight = 0;
+    int i;
+    while(1)
+    {
+        for(i = 0; i<nfiles; i++)
+        {
+            if(i == highlight)
+                wattron(menuwin, A_REVERSE); //Hightlight the option selected in the menu
+            mvwprintw(menuwin, i + 1, 1, fnames[i]); //Print the choice highlighted
+            wattroff(menuwin, A_REVERSE); //Stop highlighting the option selected
+        }
+
+        choice = wgetch(menuwin); //Obtain the choice desired
+
+        switch(choice)
+        {
+            case KEY_UP:
+                if ( highlight>0){ //Limiting the highlight to the first selection if we exceed
+                    highlight--;}
+                break;
+            case KEY_DOWN:
+                if ( highlight<nfiles-1){ //Limiting the highlight to the last selection if we exceed
+                    highlight++;}
+                break;
+            default: //In case the user select another key
+                break;
+        }
+        if(choice == 10) // When the key "Enter" is selected, we will choose the opction highlighted
+            break;
+    }
+
+    usleep(1000*50); 
+
+    //Make sure program waits for exiting
+    wborder(menuwin, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+    wclear(menuwin);
+    clear();
+    wrefresh(menuwin);
+    delwin(menuwin);
+    refresh();
+    
+    char* fullpath = (char*) malloc (50*sizeof(char));
+    strcpy (fullpath,"./../configs/");
+    strcat(fullpath, fnames[highlight]);
+    return (fullpath);
+}
 
 void checkdims (int y, int x)
 {

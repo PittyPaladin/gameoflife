@@ -10,6 +10,16 @@ int main (int argc, char* argv[])
     // Initialize ncurses
     init_ncurses (&nrows, &ncols);
 
+    // Display the start menu
+    int ymax, xmax;
+    getmaxyx(stdscr, ymax, xmax);
+    char* initconf_path = show_menu (ymax, xmax);
+
+    // Load the cells of the initial configuration
+    int initcells_rows, initcells_cols;
+    CELL** init_cells = load_initconfig (initconf_path, &initcells_rows, &initcells_cols);
+    free (initconf_path);
+
     // Setup cell grid and bottom information windows in ncurses
     WINDOW* cellgrid_win = setup_cellgrid_window (nrows, ncols);
     WINDOW* info_win = setup_info_window (nrows, ncols);
@@ -19,19 +29,16 @@ int main (int argc, char* argv[])
     
     // Fill this array with dead cells
     zerofill (grid, nrows, ncols);
+
+    // Put the initial configuration in the 2D array of cells
+    place_cells (grid, init_cells, nrows, ncols, initcells_rows, initcells_cols);
     
-    /* For inverted U */
-	grid[15][39].current_state = 1;
-	grid[15][40].current_state = 1;
-	grid[16][39].current_state = 1;
-	grid[16][41].current_state = 1;
-	grid[17][41].current_state = 1;
-	grid[17][42].current_state = 1;
-    
+   
     // Display to terminal the initial state
     int gen = 0;
     display (cellgrid_win, info_win, grid, nrows, ncols, gen);
     gen += 1;
+
 
     // Start the main loop
     while (1)
