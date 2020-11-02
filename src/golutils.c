@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
+#include <ncurses.h>
 
 // The cell struct. New type is customary to write it in caps.
 typedef struct {
@@ -163,6 +164,7 @@ CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
     // Check if the file exists
 	if (file_selected == NULL)             
 	{
+        endwin();
 		printf("The configuration selected doesn't exist\n");
         exit(EXIT_FAILURE);
 	}
@@ -185,6 +187,7 @@ CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
                 }
                 else if (cols != width)
                 {
+                    endwin();
                     printf("The configuration selected is incorrect. Number of columns is not the same for every row.\n");
                     exit(EXIT_FAILURE);
                 }
