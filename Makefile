@@ -17,13 +17,13 @@ $(EXEC): build/main.o build/disp.o build/golutils.o
 	$(CC) -o $(EXEC) build/main.o build/disp.o build/golutils.o $(LDFLAGS) $(CFLAGS)
 
 build/main.o: src/main.c src/golcompute.h src/goldisp.h
-	$(CC) -c $< -o $@
+	$(CC) -c -g $< -o $@
 
 build/disp.o: src/disp.c src/golcompute.h
-	$(CC) -c $< -o $@
+	$(CC) -c -g $< -o $@
 
 build/golutils.o: src/golutils.c
-	$(CC) -c $< -o $@
+	$(CC) -c -g $< -o $@
 
 clean:
 	rm -f build/* $(EXEC) 

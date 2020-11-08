@@ -235,8 +235,8 @@ CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
     
     *initrows = height;
     *initcols = cols;
-	return grid_conf;
     fclose(file_selected);
+	return grid_conf;
 }
 
 void place_cells (CELL** canvas, CELL** cellinput, 

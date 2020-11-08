@@ -35,7 +35,7 @@ int main (int argc, char* argv[])
 
     // Put the initial configuration in the 2D array of cells
     place_cells (grid, init_cells, nrows, ncols, initcells_rows, initcells_cols);
-    
+    freemem(init_cells, initcells_rows);
    
     // Display to terminal the initial state
     int gen = 0;
