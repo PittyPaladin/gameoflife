@@ -12,6 +12,8 @@ typedef struct {
 
 void new_state2current_state (CELL** field, int nrows, int ncols)
 {
+    /* Coder 2 */
+
     for (int i = 0; i < nrows; ++i){
         for (int j = 0; j < ncols; ++j){
             /* Swap state to prepare for next iteration: take the cell's new 
@@ -23,8 +25,9 @@ void new_state2current_state (CELL** field, int nrows, int ncols)
 
 void compute_new_state (CELL** field, int i, int j, int nrows, int ncols)
 {
-    // Compute the new state for the cell, in other words, let a generation go by
+    /* Coder 2 */
 
+    // Compute the new state for the cell, in other words, let a generation go by
     // RULES //
     /* 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
        2. Any live cell with two or three live neighbours lives on to the next generation.
@@ -62,7 +65,8 @@ void compute_new_state (CELL** field, int i, int j, int nrows, int ncols)
 
 void next_generation (CELL** field, int nrows, int ncols)
 {
-    //
+    /* Coder 2 */
+
     for (int i = 0; i < nrows; ++i)
         for (int j = 0; j < ncols; ++j)
             compute_new_state (field, i, j, nrows, ncols);
@@ -71,6 +75,8 @@ void next_generation (CELL** field, int nrows, int ncols)
 
 void freemem (CELL** field, int nrows)
 {
+    /* Coder 2 */
+
     // Free the memory
     for (int i = 0; i < nrows; ++i)
         free(field[i]);
@@ -79,6 +85,8 @@ void freemem (CELL** field, int nrows)
 
 CELL** cellsmalloc (int nrows, int ncols)
 {
+    /* Coder 2 */
+
     // Allocate array of CELL per each array (row)
     CELL** field = (CELL**) malloc(nrows*sizeof(CELL*));
     for (int i = 0; i < nrows; ++i)
@@ -89,6 +97,8 @@ CELL** cellsmalloc (int nrows, int ncols)
 
 void zerofill (CELL** field, int nrows, int ncols)
 {
+    /* Coder 2 */
+
     // Just fill all with zeros
     CELL cell;
     cell.current_state = 0;
@@ -101,6 +111,8 @@ void zerofill (CELL** field, int nrows, int ncols)
 
 char** listfiles (int* nfiles)
 {
+    /* Coder 1 */
+
     /* This function takes an int pointer with no integer value on it and fills
      it with the number of .gol files in the ./../configs/ directory. It returns 
      a pointer of pointers that point to the dynamically allocated file names. */
@@ -109,41 +121,38 @@ char** listfiles (int* nfiles)
     struct dirent* entry;
     const char* ext;
     *nfiles = 0;
-    char** filenames;
 
     // Go up one dir and try enter configs. Exit if it doesn't exist.
     dir = opendir ("./../configs/");
     if (dir == NULL)
     {
-    fprintf(stderr, "Could not find ../configs/ \nexiting.\n");
+        fprintf(stderr, "Could not find ../configs/ \nexiting.\n");
+        closedir(dir);
         exit(EXIT_FAILURE);
     }
-    else
+    // Get number of files with .gol extension
+    while ((entry = readdir (dir)) != NULL) 
     {
-        // Get number of files with .gol extension
-        while ((entry = readdir (dir)) != NULL) 
-        {
-            // Check if file has .gol format
-            ext = strrchr (entry->d_name, '.');
-            if ( (ext != NULL) && (!strcmp (ext+1, "gol")) )
-                *nfiles += 1;
-        }
+        // Check if file has .gol format
+        ext = strrchr (entry->d_name, '.');
+        if ( (ext != NULL) && (!strcmp (ext+1, "gol")) )
+            *nfiles += 1;
+    }
         
-        // Allocate *nfiles pointers that will point to the .gol filenames
-        filenames = (char**) malloc (*nfiles*sizeof(char*));
+    // Allocate *nfiles pointers that will point to the .gol filenames
+    char** filenames = (char**) malloc (*nfiles*sizeof(const char*));
 
-        // Loop through each file in the directory 
-        dir = opendir ("./../configs/");
-        int i = 0;
-        while ((entry = readdir (dir)) != NULL) 
+    // Loop through each file in the directory 
+    rewinddir(dir);
+    int i = 0;
+    while ((entry = readdir (dir)) != NULL) 
+    {
+        // Check if file has .gol format
+        ext = strrchr (entry->d_name, '.');
+        if ( (ext != NULL) && (!strcmp (ext+1, "gol")) )
         {
-            // Check if file has .gol format
-            ext = strrchr (entry->d_name, '.');
-            if ( (ext != NULL) && (!strcmp (ext+1, "gol")) )
-            {
-                filenames[i] = entry->d_name;
-                i += 1;
-            }
+            filenames[i] = entry->d_name;
+            i += 1;
         }
     }
     closedir(dir); 
@@ -152,6 +161,8 @@ char** listfiles (int* nfiles)
 
 CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
 {
+    /* Coder 1 */
+
 	FILE *file_selected;
 	file_selected = fopen(file_path, "r"); // Open the document in mode read
 	int height = 0;                        // Variable that represents the height of the configuration
@@ -166,6 +177,7 @@ CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
 	{
         endwin();
 		printf("The configuration selected doesn't exist\n");
+        fclose(file_selected);
         exit(EXIT_FAILURE);
 	}
 	else 
@@ -183,12 +195,13 @@ CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
 			{
                 if (k == 0)
                 {
-                    cols = width;
+                    cols = width; // Store the width of the first row
                 }
-                else if (cols != width)
+                else if (cols != width) // Compare the width of every row with the initial width to assure that are the same
                 {
                     endwin();
                     printf("The configuration selected is incorrect. Number of columns is not the same for every row.\n");
+                    fclose(file_selected);
                     exit(EXIT_FAILURE);
                 }
 				height++;
@@ -223,15 +236,16 @@ CELL** load_initconfig(char* file_path, int* initrows, int* initcols)
     *initrows = height;
     *initcols = cols;
 	return grid_conf;
-
+    fclose(file_selected);
 }
 
 void place_cells (CELL** canvas, CELL** cellinput, 
                   int canvas_rows, int canvas_cols, 
                   int cellin_rows, int cellin_cols)
 {
-    /* Place them in the center of the canvas. */
-    
+    /* Coder 2 */
+
+    // Place them in the center of the canvas.
     int startrow = canvas_rows/2 - cellin_rows/2;
     int startcol = canvas_cols/2 - cellin_cols/2;
 

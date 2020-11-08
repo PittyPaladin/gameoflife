@@ -5,8 +5,11 @@
 #include "golcompute.h"
 #include "goldisp.h"
 
+
 int main (int argc, char* argv[]) 
 {
+    /* Both done by Coder 1 and Coder 2 */
+
     // Initialize ncurses
     init_ncurses (&nrows, &ncols);
 
@@ -41,7 +44,9 @@ int main (int argc, char* argv[])
 
 
     // Start the main loop
-    while (1)
+    char ch;
+    timeout(0);
+    while (ch = getch())
     {
         // Go for all cells in the grid and compute their new state after one generation
         next_generation(grid, nrows, ncols);
@@ -54,17 +59,18 @@ int main (int argc, char* argv[])
 
         usleep(1000*100); // or it will go too fast
         gen += 1;
+
+        // Check if user wants to exit with the q key
+        if (ch == 'q')
+            break;
     }
-
-
-    // getch so the program doesn't exit straight away
-    wgetch(cellgrid_win);
 
     // Liberate the memory
     freemem (grid, nrows);
 
     // End ncurses
     endwin();
+    printf("Thanks for playing \n");
 
     return (1);
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ncurses.h>
+#include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h> // to include sleep
@@ -19,17 +20,18 @@
 
 char* show_menu (int ymax, int xmax)
 {
+    /* Coder 1 */
+
     /* Obtain the maximum sizes of the windows to used them for the windows of 
      menu. */
          
     // Get the list of files that could serve as initial configs
     int nfiles;
-    char** fnames = listfiles (&nfiles);
+    char** fnames = listfiles(&nfiles);
     printf(" ");
 
     // Create a windows for the menu
     int ncols_menu = xmax - WIN_MARGINS*2;
-    // fprintf(stdout, " "); // I don't know why, if this line is not here, menu breaks
     WINDOW* menuwin = newwin(nfiles+3, ncols_menu, BEGIN_Y_MENU, WIN_MARGINS); //int nlines, int ncols, int begin_y, int begin_x
     box(menuwin, 0, 0);
 
@@ -53,7 +55,7 @@ char* show_menu (int ymax, int xmax)
         {
             if(i == highlight)
                 wattron(menuwin, A_REVERSE); //Hightlight the option selected in the menu
-            mvwprintw(menuwin, i + 1, 1, fnames[i]); //Print the choice highlighted
+            mvwprintw(menuwin, i + 1, 1, "* %s", fnames[i]); //Print the choice highlighted
             wattroff(menuwin, A_REVERSE); //Stop highlighting the option selected
         }
 
@@ -89,11 +91,14 @@ char* show_menu (int ymax, int xmax)
     char* fullpath = (char*) malloc (50*sizeof(char));
     strcpy (fullpath,"./../configs/");
     strcat(fullpath, fnames[highlight]);
+    free(fnames);
     return (fullpath);
 }
 
 void checkdims (int y, int x)
 {
+    /* Coder 2 */
+
     /* Check if the terminal size is large enough for gol to run. If not, exit
     the program. y actually stands for lines and x for columns. */
 
@@ -107,9 +112,9 @@ void checkdims (int y, int x)
 
 WINDOW* setup_cellgrid_window (int ymax, int xmax)
 {
-    /////////////////////////////////////////////////
-    // Create grid window that will hold the cells //
-    /////////////////////////////////////////////////
+    /* Coder 1 */
+
+    // Create grid window that will hold the cells.
     int nlines_grid = ymax - BEGIN_Y_CELLGRID - WIN2WIN_SEPARATION - NLINES_INFOWIN; // number of lines the grid is allowed to have without overflowing through the bottom
     int ncols_grid = xmax - WIN_MARGINS*2;
     WINDOW* gridwin = newwin(nlines_grid, ncols_grid, BEGIN_Y_CELLGRID, WIN_MARGINS); 
@@ -123,9 +128,9 @@ WINDOW* setup_cellgrid_window (int ymax, int xmax)
 
 WINDOW* setup_info_window (int ymax, int xmax)
 {
-    ///////////////////////////////////////////////////////////////
-    // Create information window (for file name, generations...) //
-    ///////////////////////////////////////////////////////////////
+    /* Coder 1 */
+
+    // Create information window (for file name, generations...).
     int ncols_inf = xmax - WIN_MARGINS*2;
     int nlines_grid = ymax - BEGIN_Y_CELLGRID - WIN2WIN_SEPARATION - NLINES_INFOWIN; // number of lines the grid is allowed to have without overflowing through the bottom
     int begin_y_inf = nlines_grid + WIN2WIN_SEPARATION;
@@ -142,6 +147,8 @@ WINDOW* setup_info_window (int ymax, int xmax)
 
 void update_gennumber (WINDOW* infowin, int gen)
 {
+    /* Coder 2 */
+
     /* Update the integer after the word "Generation: " to tell the user at 
     which generation the simulation is at */
     mvwprintw(infowin, 1, WIN_MARGINS + strlen("Generation: "), "%d", gen);
@@ -149,6 +156,8 @@ void update_gennumber (WINDOW* infowin, int gen)
 
 void init_ncurses (int* ymax, int* xmax)
 {
+    /* Coder 1 */
+    
     // Start ncurses
     initscr();
 
@@ -200,6 +209,8 @@ void init_ncurses (int* ymax, int* xmax)
 
 void display (WINDOW* fieldwin, WINDOW* infowin, CELL** field, int nrows, int ncols, int generations)
 {
+    /* Coder 2 */
+
     // Put cells visible in terminal
     int ymax_grid, xmax_grid, ymin_grid, xmin_grid, x, y, i, j;
     getmaxyx(fieldwin, ymax_grid, xmax_grid);
